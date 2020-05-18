@@ -94,19 +94,19 @@ public class EosHelper {
       Sha256Hash to_sign   = Sha256Hash.wrap(to_signBytes);
       ECDSASignature sign  = signer.sign(to_sign);
       
-      byte[] signatureDER  = sign.encodeToDER();
-      System.out.println(" sign.der to hex: " + PixiUtils.bytes2hex(signatureDER));
-
-      String signatureEncoded = BaseEncoding.base16().lowerCase().encode(sign.encodeToDER());
+      // byte[] signatureDER  = sign.encodeToDER();
+      // System.out.println(" sign.der to hex: " + PixiUtils.bytes2hex(signatureDER));
+      // String signatureEncoded = BaseEncoding.base16().lowerCase().encode(sign.encodeToDER());
 
 
       byte[] result = getSignatureBytes(to_sign, signer);
 
-      System.out.println(" result: " + PixiUtils.bytes2hex(result) );
-      System.out.println(" result: " + Base64.encodeBase64String(result) );
-      System.out.println(" result: " + checkEncode(result) );
+      // System.out.println(" result: " + PixiUtils.bytes2hex(result) );
+      // System.out.println(" result: " + Base64.encodeBase64String(result) );
+      String base58_signature = checkEncode(result, null);
+      System.out.println(" result: " + base58_signature );
 
-      return "done";
+      return base58_signature;
     }
 
     private static byte[] getSignatureBytes(Sha256Hash hashTransaction, ECKey requiredPrivateKey) {
@@ -147,17 +147,19 @@ public class EosHelper {
 
     }
 
-    private static String checkEncode(byte[] buffer) throws Exception{
+    private static String checkEncode(byte[] buffer, @Nullable String type) throws Exception{
       String _type       = "K1";
+      if(type!=null)
+        _type=type;
       byte[] check       = buffer.clone();
       // byte[] _type_bytes = Utils.HEX.decode(_type); 
       byte[] _type_bytes = _type.getBytes(StandardCharsets.UTF_8);
       // create a destination array that is the size of the two arrays
       
       byte[] destination = new byte[check.length + _type_bytes.length];
-      System.out.println(" ************************************* 1 ");
+      // System.out.println(" ************************************* 1 ");
       System.arraycopy(check, 0, destination, 0, check.length);
-      System.out.println(" ************************************* 2 ");
+      // System.out.println(" ************************************* 2 ");
       System.arraycopy(_type_bytes, 0, destination, check.length, _type_bytes.length);
       
       RIPEMD160Digest digest = new RIPEMD160Digest();
@@ -166,12 +168,10 @@ public class EosHelper {
       digest.doFinal(out, 0);
       byte[] checksum = Arrays.copyOfRange(out, 0, 4);
 
-      // System.out.println(" ************************************* checksum.length " + checksum.length);
-      // System.out.println(" ************************************* destination.length " + destination.length);
       byte[] result = new byte[check.length + checksum.length];
-      System.out.println(" ************************************* 3 ");
+      // System.out.println(" ************************************* 3 ");
       System.arraycopy(check, 0, result, 0, check.length);
-      System.out.println(" ************************************* 4 ");
+      // System.out.println(" ************************************* 4 ");
       System.arraycopy(checksum, 0, result, check.length, checksum.length);
 
       return "SIG_K1_" + Base58.encode(result);

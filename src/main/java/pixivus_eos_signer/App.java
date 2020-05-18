@@ -20,10 +20,9 @@ public class App {
 
     public static String doAll() throws Exception{
 
-      EosHelper signer = new EosHelper(ACCOUNT_NAME, PASSWORD);
-      PixiKey my_key   = signer.calculateKey();
-      String res       = signer.doSignString(CHALLENGE, my_key);
-
+      EosHelper signer    = new EosHelper(ACCOUNT_NAME, PASSWORD);
+      PixiKey my_key      = signer.calculateKey();
+      String res          = signer.doSignString(CHALLENGE, my_key);
       return "done!";
     }
     public static void main(String[] args) throws Exception{

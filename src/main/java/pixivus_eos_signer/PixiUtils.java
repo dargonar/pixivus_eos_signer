@@ -12,6 +12,10 @@ public class PixiUtils
       return encodedhash;
     }
 
+    // public static String buildBearer (String token) throws Exception{
+    //   return "BEARER " + token;
+    // }
+
     public static String bytes2hex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         String tmp = null;
