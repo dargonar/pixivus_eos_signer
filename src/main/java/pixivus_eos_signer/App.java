@@ -66,7 +66,7 @@ public class App {
     
     private static String CHALLENGE    = "5HuAHNRFZoP5pR3BTN66HmxUp28zSZxckhP56G1PkrhAqwDp1d4";
     private static String SEED         = "atomakinnaka.1234";
-    private static String EXPECTED_SIG = "SIG_K1_KWwRh5DbBt7o7xfnzQT2GNpivPab82WwNzSqYZZBWEzvdNY8oJtZsdtBfgpjy1BsMRtVrhgVhDPZmPo3CEUYCcMqwZLo5C";
+    private static String EXPECTED_SIG = "SIG_K1_K98CxvV38rYjpkCVV3vjgMvUPZeYf1tADbonw6QBX7WTJdFRc1vxLyPg7DNoTc4QS8cYf9PhmxU1y5WcNTAMLCC4exPXqY";
     private static String DERIVE_PATH  = "m/44'/194'/0'/0/0";
 
     static class PixiKey
