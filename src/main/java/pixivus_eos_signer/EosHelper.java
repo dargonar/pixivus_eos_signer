@@ -47,21 +47,29 @@ public class EosHelper {
     private static String EXPECTED_SIG = "SIG_K1_K98CxvV38rYjpkCVV3vjgMvUPZeYf1tADbonw6QBX7WTJdFRc1vxLyPg7DNoTc4QS8cYf9PhmxU1y5WcNTAMLCC4exPXqY";
     private static String DERIVE_PATH  = "m/44'/194'/0'/0/0";
 
-    private String account_name = "";
-    private String password     = "";
+    public String account_name = "";
+    public String password     = "";
+    public PixiKey my_key      = null;
 
     public EosHelper (String account_name, String password){
       this.account_name = account_name;
       this.password     = password;
     }
 
+    public EosHelper (String account_name, String password, Boolean calculate_key) throws Exception{
+      this.account_name = account_name;
+      this.password     = password;
+      if(calculate_key)
+        this.my_key = this.calculateKey();
+    }
+
    
     public PixiKey calculateKey() throws Exception{
 
-      String seed            = this.account_name + "." + this.password;
-      byte[] pk_seed         = PixiUtils.sha256(seed);
-      ExtendedPrivateKey key = ExtendedPrivateKey.fromSeed(pk_seed, Bitcoin.MAIN_NET);
-      key                    = key.derive(DERIVE_PATH);
+      String seed               = this.account_name + "." + this.password;
+      byte[] pk_seed            = PixiUtils.sha256(seed);
+      ExtendedPrivateKey key    = ExtendedPrivateKey.fromSeed(pk_seed, Bitcoin.MAIN_NET);
+      key                       = key.derive(DERIVE_PATH);
       for (int index = 0; index < 10; index++) 
       {
         byte[] priv_key_bytes     = Arrays.copyOfRange(key.extendedKeyByteArray(), 46, 46+32);
@@ -75,17 +83,29 @@ public class EosHelper {
       byte[] _private_key       = Arrays.copyOfRange(ext_private_key, 46, 46+32);
       byte[] _public_key        = Arrays.copyOfRange(ext_public_key, 46, 46+32);
 
-      PixiKey myKey = new PixiKey("", ext_private_key, ext_public_key, _private_key, _public_key);
-      
+      PixiKey myKey             = new PixiKey("", ext_private_key, ext_public_key, _private_key, _public_key);
+      this.my_key               = myKey;
       return myKey;
 
     }
-  
+    
+    public String doSignString(String challenge) throws Exception{
+      return this.doSignString(challenge, this.my_key);
+    }
+
     public String doSignString(String challenge, @Nullable PixiKey pixi_key) throws Exception{
       
       PixiKey key          = pixi_key;
-       if (pixi_key != null) {
-        key = calculateKey();
+       if (pixi_key == null) {
+        if(this.my_key==null)
+        {
+          key = calculateKey();
+        }
+        else{
+          if(this.my_key==null)
+            throw new Exception("NO KEY ERROR");
+          key = this.my_key;
+        }
       }
 
       ECKey signer         = ECKey.fromPrivate(key.private_key);

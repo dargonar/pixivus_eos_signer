@@ -6,7 +6,8 @@ package pixivus_eos_signer;
 
 import pixivus_eos_signer.EosHelper;
 import pixivus_eos_signer.PixiKey;
-
+import pixivus_eos_signer.PixiGraphqlClient;
+import org.json.JSONObject;
 import static org.junit.Assert.*;
 
 public class App {
@@ -20,9 +21,13 @@ public class App {
 
     public static String doAll() throws Exception{
 
-      EosHelper signer    = new EosHelper(ACCOUNT_NAME, PASSWORD);
-      PixiKey my_key      = signer.calculateKey();
-      String res          = signer.doSignString(CHALLENGE, my_key);
+      EosHelper signer     = new EosHelper(ACCOUNT_NAME, PASSWORD, true);
+      PixiKey my_key       = signer.calculateKey();
+      String res_signature = signer.doSignString(CHALLENGE);
+      JSONObject res_login = PixiGraphqlClient.doLogin(signer);
+      String token         = res_login.getString("token");
+      String bearer_token  = "BEARER " + token; 
+      JSONObject res_profile   = PixiGraphqlClient.getAccountProfile(ACCOUNT_NAME, bearer_token);
       return "done!";
     }
     public static void main(String[] args) throws Exception{
