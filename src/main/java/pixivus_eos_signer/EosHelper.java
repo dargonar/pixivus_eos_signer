@@ -47,8 +47,8 @@ public class EosHelper {
     private static String EXPECTED_SIG = "SIG_K1_K98CxvV38rYjpkCVV3vjgMvUPZeYf1tADbonw6QBX7WTJdFRc1vxLyPg7DNoTc4QS8cYf9PhmxU1y5WcNTAMLCC4exPXqY";
     private static String DERIVE_PATH  = "m/44'/194'/0'/0/0";
 
-    public String account_name = "";
-    public String password     = "";
+    public String account_name = null;
+    public String password     = null;
     public PixiKey my_key      = null;
 
     public EosHelper (String account_name, String password){
@@ -90,24 +90,20 @@ public class EosHelper {
     }
     
     public String doSignString(String challenge) throws Exception{
+      if(this.my_key==null)
+      {
+        if(this.account_name==null || this.password==null)
+            throw new Exception("NO KEY ERROR");
+        
+        this.my_key = this.calculateKey();
+      }
       return this.doSignString(challenge, this.my_key);
     }
 
-    public String doSignString(String challenge, @Nullable PixiKey pixi_key) throws Exception{
+    public String doSignString(String challenge, PixiKey key) throws Exception{
       
-      PixiKey key          = pixi_key;
-       if (pixi_key == null) {
-        if(this.my_key==null)
-        {
-          key = calculateKey();
-        }
-        else{
-          if(this.my_key==null)
-            throw new Exception("NO KEY ERROR");
-          key = this.my_key;
-        }
-      }
-
+      if(key==null)
+        throw new Exception("NO KEY ERROR");
       ECKey signer         = ECKey.fromPrivate(key.private_key);
 
       byte[] to_signBytes  = PixiUtils.sha256(challenge);

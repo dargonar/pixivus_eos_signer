@@ -18,11 +18,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-// import javax.servlet.ServletException;
-// import javax.servlet.annotation.WebServlet;
-// import javax.servlet.http.HttpServlet;
-// import javax.servlet.http.HttpServletRequest;
-// import javax.servlet.http.HttpServletResponse;
 
 import pixivus_eos_signer.EosHelper;
 
@@ -34,27 +29,6 @@ public class PixiGraphqlClient {
   private static String REST_END_POINT  = BASE_URL+"/api/v1";
   private static String AUTH_CHALLENGE  = REST_END_POINT+"/eos/challenge";
   private static String AUTH_LOGIN      = REST_END_POINT+"/eos/auth";
-
-  // private static String readAll(Reader rd) throws IOException {
-  //   StringBuilder sb = new StringBuilder();
-  //   int cp;
-  //   while ((cp = rd.read()) != -1) {
-  //     sb.append((char) cp);
-  //   }
-  //   return sb.toString();
-  // }
-
-  // public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-  //   InputStream is = new URL(url).openStream();
-  //   try {
-  //     BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-  //     String jsonText = readAll(rd);
-  //     JSONObject json = new JSONObject(jsonText);
-  //     return json;
-  //   } finally {
-  //     is.close();
-  //   }
-  // }
 
   private static JSONObject get(String uri) throws Exception{
     URL url                = new URL(uri);
@@ -154,9 +128,13 @@ public class PixiGraphqlClient {
     // Set HTTP request method.
     conn.setRequestMethod("POST");
 
-    String jsonText = "{ query: { profile(account_name: "+account_name+") { user{ _id account_type max_buckets account_name public_key } buckets{ permission _id bucket{ bucketCounterId name description } } } } }";
-    JSONObject json = new JSONObject(jsonText);
-
+    // String jsonText = "{ query: { profile(account_name: \""+account_name+"\") { user{ _id account_type max_buckets account_name public_key } buckets{ permission _id bucket{ bucketCounterId name description } } } } }";
+    // System.out.println(jsonText);
+    //{ query: { profile(account_name: atomakinnaka) { user{ _id account_type max_buckets account_name public_key } buckets{ permission _id bucket{ bucketCounterId name description } } } } }
+    // JSONObject json = new JSONObject(jsonText);
+    String gql_query = "{ profile(account_name: \""+account_name+"\") { user{ _id account_type max_buckets account_name public_key } buckets{ permission _id bucket{ bucketCounterId name description } } } } ";
+    JSONObject json = new JSONObject();
+    json.put("query", gql_query);
     try(OutputStream os = conn.getOutputStream()) {
       byte[] input = json.toString().getBytes("utf-8");
       os.write(input, 0, input.length);           

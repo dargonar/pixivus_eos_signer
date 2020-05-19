@@ -21,12 +21,12 @@ public class App {
 
     public static String doAll() throws Exception{
 
-      EosHelper signer     = new EosHelper(ACCOUNT_NAME, PASSWORD, true);
-      PixiKey my_key       = signer.calculateKey();
-      String res_signature = signer.doSignString(CHALLENGE);
-      JSONObject res_login = PixiGraphqlClient.doLogin(signer);
-      String token         = res_login.getString("token");
-      String bearer_token  = "BEARER " + token; 
+      EosHelper signer         = new EosHelper(ACCOUNT_NAME, PASSWORD, true);
+      PixiKey my_key           = signer.calculateKey();
+      // String res_signature     = signer.doSignString(CHALLENGE);
+      JSONObject res_login     = PixiGraphqlClient.doLogin(signer);
+      String token             = res_login.getString("token");
+      String bearer_token      = "BEARER " + token; 
       JSONObject res_profile   = PixiGraphqlClient.getAccountProfile(ACCOUNT_NAME, bearer_token);
       return "done!";
     }
