@@ -23,8 +23,8 @@ import pixivus_eos_signer.EosHelper;
 
 public class PixiGraphqlClient {
 
-  // private static String BASE_URL        = "https://pixivuscore.herokuapp.com";
-  private static String BASE_URL        = "http://localhost:3600";
+  private static String BASE_URL        = "https://pixivuscore.herokuapp.com";
+  // private static String BASE_URL        = "http://localhost:3600";
   private static String GQL_END_POINT   = BASE_URL+"/api/v1/graphiql";
   private static String REST_END_POINT  = BASE_URL+"/api/v1";
   private static String AUTH_CHALLENGE  = REST_END_POINT+"/eos/challenge";
@@ -67,7 +67,7 @@ public class PixiGraphqlClient {
     JSONObject challenge   = get(uri);
     System.out.println(" doLogin #1");
     String challenge_string= challenge.getString("to_sign");
-    System.out.println(" doLogin #2");
+    System.out.println(" doLogin #2 . challenge_string:"+challenge_string);
     String res_signature   = signer.doSignString(challenge_string);
     System.out.println(" doLogin #3");
     String jsonText        = "{account_name:"+signer.account_name+" ,signature: "+res_signature+",challenge:"+challenge_string+"}";

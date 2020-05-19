@@ -23,7 +23,9 @@ public class App {
 
       EosHelper signer         = new EosHelper(ACCOUNT_NAME, PASSWORD, true);
       PixiKey my_key           = signer.calculateKey();
+      
       // String res_signature     = signer.doSignString(CHALLENGE);
+
       JSONObject res_login     = PixiGraphqlClient.doLogin(signer);
       String token             = res_login.getString("token");
       String bearer_token      = "BEARER " + token; 

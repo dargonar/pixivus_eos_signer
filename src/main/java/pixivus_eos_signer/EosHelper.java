@@ -60,7 +60,7 @@ public class EosHelper {
       this.account_name = account_name;
       this.password     = password;
       if(calculate_key)
-        this.my_key = this.calculateKey();
+        this.calculateKey();
     }
 
    
@@ -92,30 +92,36 @@ public class EosHelper {
     public String doSignString(String challenge) throws Exception{
       if(this.my_key==null)
       {
+        System.out.println("EosHelper::doSignString #1");
         if(this.account_name==null || this.password==null)
             throw new Exception("NO KEY ERROR");
-        
-        this.my_key = this.calculateKey();
+        System.out.println("EosHelper::doSignString #2");
+        this.calculateKey();
       }
+      System.out.println("EosHelper::doSignString #3");
       return this.doSignString(challenge, this.my_key);
     }
 
     public String doSignString(String challenge, PixiKey key) throws Exception{
       
+      System.out.println("EosHelper::doSignString_EX #1");
       if(key==null)
         throw new Exception("NO KEY ERROR");
-      ECKey signer         = ECKey.fromPrivate(key.private_key);
-
+      
+      ECKey ecKey          = ECKey.fromPrivate(key.private_key);
+      System.out.println("EosHelper::doSignString_EX #2");
       byte[] to_signBytes  = PixiUtils.sha256(challenge);
       Sha256Hash to_sign   = Sha256Hash.wrap(to_signBytes);
-      ECDSASignature sign  = signer.sign(to_sign);
       
+      // ECDSASignature sign  = ecKey.sign(to_sign);
       // byte[] signatureDER  = sign.encodeToDER();
       // System.out.println(" sign.der to hex: " + PixiUtils.bytes2hex(signatureDER));
       // String signatureEncoded = BaseEncoding.base16().lowerCase().encode(sign.encodeToDER());
+      System.out.println("EosHelper::doSignString_EX #3");
 
+      byte[] result = getSignatureBytes(to_sign, ecKey);
 
-      byte[] result = getSignatureBytes(to_sign, signer);
+      System.out.println("EosHelper::doSignString_EX #4");
 
       // System.out.println(" result: " + PixiUtils.bytes2hex(result) );
       // System.out.println(" result: " + Base64.encodeBase64String(result) );
@@ -155,6 +161,7 @@ public class EosHelper {
         // Further "canonicality" tests
         if (isCanonical(signatureData)) {
           // this.setExpiration(Util.addTime(this.getExpiration(), 1));
+          isGrapheneCanonical = true;
         } else {
           isGrapheneCanonical = true;
         }
