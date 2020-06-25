@@ -8,13 +8,15 @@ import pixivus_eos_signer.EosHelper;
 import pixivus_eos_signer.PixiKey;
 import pixivus_eos_signer.PixiGraphqlClient;
 import org.json.JSONObject;
+import org.json.JSONArray;
 import static org.junit.Assert.*;
 
 public class App {
     
     private static String CHALLENGE    = "5HuAHNRFZoP5pR3BTN66HmxUp28zSZxckhP56G1PkrhAqwDp1d4";
     private static String ACCOUNT_NAME = "atomakinnaka";
-    private static String PASSWORD     = "1234";
+    private static String PASSWORD     = "xxxx";
+    private static String PRIVATE_KEY  = "";
     private static String SEED         = ACCOUNT_NAME+"."+PASSWORD;
     private static String EXPECTED_SIG = "SIG_K1_K98CxvV38rYjpkCVV3vjgMvUPZeYf1tADbonw6QBX7WTJdFRc1vxLyPg7DNoTc4QS8cYf9PhmxU1y5WcNTAMLCC4exPXqY";
     private static String DERIVE_PATH  = "m/44'/194'/0'/0/0";
@@ -30,7 +32,19 @@ public class App {
       String token             = res_login.getString("token");
       String bearer_token      = "BEARER " + token; 
       JSONObject res_profile   = PixiGraphqlClient.getAccountProfile(ACCOUNT_NAME, bearer_token);
-      return "done!";
+      
+
+      // Ver estructura en https://github.com/dargonar/pixivus_backend/blob/master/src/graphql/index.js
+      JSONArray buckets        = res_profile.getJSONObject("data").getJSONObject("profile").getJSONArray("buckets");
+      if(buckets.length()==0){
+        return " ************* done up to here! -- but user has no associated buckets. cant post file.";
+      }
+      JSONObject bucket0       = buckets.getJSONObject(0).getJSONObject("bucket");
+      String bucket_id          = bucket0.getString("_id");
+      // Validate category!
+      String category_id       = bucket0.getJSONArray("categories").getJSONObject(0).getString("_id");
+      JSONArray res_post      = PixiGraphqlClient.postFile(ACCOUNT_NAME, bearer_token, bucket_id, category_id);
+      return " ************* done!";
     }
     public static void main(String[] args) throws Exception{
         System.out.println(new App().doAll());
