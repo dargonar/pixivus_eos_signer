@@ -41,8 +41,8 @@ import org.apache.http.util.EntityUtils;
 
 public class PixiGraphqlClient {
 
-  // private static String BASE_URL        = "https://pixivuscore.herokuapp.com";
-  private static String BASE_URL        = "http://localhost:3600";
+  private static String BASE_URL        = "https://pixivuscore.herokuapp.com";
+  // private static String BASE_URL        = "http://localhost:3600";
   private static String GQL_END_POINT   = BASE_URL+"/api/v1/graphiql";
   private static String REST_END_POINT  = BASE_URL+"/api/v1";
   private static String AUTH_CHALLENGE  = REST_END_POINT+"/eos/challenge";
